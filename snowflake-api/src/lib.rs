@@ -403,7 +403,7 @@ impl SnowflakeApi {
         let resp = self
             .run_sql::<ExecResponse>(sql, QueryType::JsonQuery)
             .await?;
-        log::debug!("Got PUT response: {:?}", resp);
+        log::trace!("Got PUT response: {:?}", resp);
 
         match resp {
             ExecResponse::Query(_) => Err(SnowflakeApiError::UnexpectedResponse),
@@ -433,16 +433,27 @@ impl SnowflakeApi {
         let resp = self
             .run_sql::<ExecResponse>(sql, QueryType::ArrowQuery)
             .await?;
-        log::debug!("Got query response: {:?}", resp);
+        
+        log::trace!("Got query response: {:?}", resp);
 
         let resp = match resp {
             // processable response
-            ExecResponse::Query(qr) => Ok(qr),
-            ExecResponse::PutGet(_) => Err(SnowflakeApiError::UnexpectedResponse),
-            ExecResponse::Error(e) => Err(SnowflakeApiError::ApiError(
-                e.data.error_code,
-                e.message.unwrap_or_default(),
-            )),
+            ExecResponse::Query(qr) => {
+                log::info!("Got a response: OK");
+                Ok(qr)
+            },
+            ExecResponse::PutGet(_) => {
+                log::info!("Got a response: Unexpected PUT response");
+                Err(SnowflakeApiError::UnexpectedResponse)
+            },
+            ExecResponse::Error(e) =>
+                {
+                    log::error!("Got a response: Error - {:?}", e);
+                    Err(SnowflakeApiError::ApiError(
+                        e.data.error_code,
+                        e.message.unwrap_or_default(),
+                    ))
+                },
         }?;
 
         // if response was empty, base64 data is empty string

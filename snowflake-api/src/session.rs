@@ -338,10 +338,11 @@ impl Session {
                 body,
             )
             .await?;
-        log::debug!("Auth response: {:?}", resp);
+        log::trace!("Auth response: {:?}", resp);
 
         match resp {
             AuthResponse::Login(lr) => {
+                log::debug!("Authenticated successfully");
                 let session_token = AuthToken::new(&lr.data.token, lr.data.validity_in_seconds);
                 let master_token =
                     AuthToken::new(&lr.data.master_token, lr.data.master_validity_in_seconds);

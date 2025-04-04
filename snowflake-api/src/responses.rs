@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ExecResponse {
     Query(QueryExecResponse),
@@ -14,7 +14,7 @@ pub enum ExecResponse {
 // todo: add close session response, which should be just empty?
 // FIXME: dead_code
 #[allow(clippy::large_enum_variant, dead_code)]
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum AuthResponse {
     Login(LoginResponse),
@@ -24,7 +24,7 @@ pub enum AuthResponse {
     Error(AuthErrorResponse),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BaseRestResponse<D> {
     // null for auth
     pub code: Option<String>,
@@ -43,7 +43,7 @@ pub type RenewSessionResponse = BaseRestResponse<RenewSessionResponseData>;
 // Data should be always `null` on successful close session response
 pub type CloseSessionResponse = BaseRestResponse<Option<()>>;
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecErrorResponseData {
     pub age: i64,
@@ -59,7 +59,7 @@ pub struct ExecErrorResponseData {
     pub sql_state: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // FIXME: dead_code
 #[allow(dead_code)]
@@ -68,13 +68,13 @@ pub struct AuthErrorResponseData {
     pub error_code: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NameValueParameter {
     pub name: String,
     pub value: serde_json::Value,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // FIXME
 #[allow(dead_code)]
@@ -90,7 +90,7 @@ pub struct LoginResponseData {
     pub validity_in_seconds: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // FIXME: dead_code
 #[allow(dead_code)]
@@ -101,7 +101,7 @@ pub struct SessionInfo {
     pub role_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // FIXME: dead_code
 #[allow(dead_code)]
@@ -111,7 +111,7 @@ pub struct AuthenticatorResponseData {
     pub proof_key: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // FIXME: dead_code
 #[allow(dead_code)]
@@ -123,7 +123,7 @@ pub struct RenewSessionResponseData {
     pub session_id: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryExecResponseData {
     pub parameters: Vec<NameValueParameter>,
@@ -163,7 +163,7 @@ pub struct QueryExecResponseData {
     // `sendResultTime`, `queryResultFormat`, `queryContext` also exist
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ExecResponseRowType {
     pub name: String,
     #[serde(rename = "byteLength")]
@@ -178,7 +178,7 @@ pub struct ExecResponseRowType {
 }
 
 // fixme: is it good idea to keep this as an enum if more types could be added in future?
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SnowflakeType {
     Fixed,
@@ -196,7 +196,7 @@ pub enum SnowflakeType {
     Array,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecResponseChunk {
     pub url: String,
@@ -204,7 +204,7 @@ pub struct ExecResponseChunk {
     pub uncompressed_size: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PutGetResponseData {
     // `kind`, `operation` are present in Go implementation, but not in .NET
@@ -233,14 +233,14 @@ pub struct PutGetResponseData {
     pub statement_type_id: Option<i64>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum CommandType {
     Upload,
     Download,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PutGetStageInfo {
     Aws(AwsPutGetStageInfo),
@@ -248,7 +248,7 @@ pub enum PutGetStageInfo {
     Gcs(GcsPutGetStageInfo),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AwsPutGetStageInfo {
     pub location_type: String,
@@ -259,7 +259,7 @@ pub struct AwsPutGetStageInfo {
     pub end_point: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct AwsCredentials {
     pub aws_key_id: String,
@@ -269,7 +269,7 @@ pub struct AwsCredentials {
     pub aws_key: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GcsPutGetStageInfo {
     pub location_type: String,
@@ -279,13 +279,13 @@ pub struct GcsPutGetStageInfo {
     pub presigned_url: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct GcsCredentials {
     pub gcs_access_token: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AzurePutGetStageInfo {
     pub location_type: String,
@@ -294,20 +294,20 @@ pub struct AzurePutGetStageInfo {
     pub creds: AzureCredentials,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct AzureCredentials {
     pub azure_sas_token: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum EncryptionMaterialVariant {
     Single(PutGetEncryptionMaterial),
     Multiple(Vec<PutGetEncryptionMaterial>),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PutGetEncryptionMaterial {
     // base64 encoded
